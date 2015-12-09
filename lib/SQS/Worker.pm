@@ -1,3 +1,4 @@
+# ABSTRACT: manages workers reading from an SQS queue
 package SQS::Worker::DefaultLogger;
   use Moose;
   sub _print { print sprintf "[%s] %s %s\n", @_ };
