@@ -8,10 +8,12 @@ package SQS::Worker::DefaultLogger;
 1;
 package SQS::Worker;
   use Paws;
-  use Moose;
+  use Moose::Role;
   use Data::Dumper;
 
   our $VERSION = '0.01';
+
+  requires 'process_message';
 
   has queue_url => (is => 'ro', isa => 'Str', required => 1);
   has region => (is => 'ro', isa => 'Str', required => 1);
