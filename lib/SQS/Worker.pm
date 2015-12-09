@@ -39,11 +39,12 @@ package SQS::Worker;
       my $message_pack = $self->sqs->ReceiveMessage(
         WaitTimeSeconds => 20,
         QueueUrl => $self->queue_url,
-        MaxNumberOfMessages => 1);
+        MaxNumberOfMessages => 1
+      );
 
-      $self->log->debug(sprintf "Got %d messages", scalar(@{ $m->Messages }));
+      $self->log->debug(sprintf "Got %d messages", scalar(@{ $message_pack->Messages }));
       
-      foreach my $message ($m->Messages) {
+      foreach my $message ($message_pack->Messages) {
         $self->log->info("Processing message " . $self->ReceiptHandle);
         eval {
           $self->process_message($message);
