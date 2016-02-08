@@ -1,4 +1,6 @@
 requires 'Paws';
+requires 'Moose';
+requires 'JSON::MaybeXS';
 on 'develop' => sub {
   requires 'Dist::Zilla';
   requires 'Dist::Zilla::Plugin::Prereqs::FromCPANfile';
