@@ -1,9 +1,9 @@
-package WorkerJson {
+package Worker::Json {
   use Moose;
   with 'SQS::Worker', 'SQS::Worker::DecodeJson';
 
   use Test::More;
-  
+
   sub process_message {
     my ($self, $p1, $p2, $p3, $p4) = @_;
 
@@ -14,3 +14,4 @@ package WorkerJson {
   }
 
 }
+1;

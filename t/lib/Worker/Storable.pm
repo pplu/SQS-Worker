@@ -1,4 +1,4 @@
-package WorkerStorable {
+package Worker::Storable {
   use Moose;
   with 'SQS::Worker', 'SQS::Worker::DecodeStorable';
 
@@ -14,3 +14,4 @@ package WorkerStorable {
   }
 
 }
+1;
