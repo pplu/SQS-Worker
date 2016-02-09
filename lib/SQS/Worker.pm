@@ -26,9 +26,11 @@ package SQS::Worker;
   has log => (is => 'ro', default => sub { SQS::Worker::DefaultLogger->new });
 
   has on_failure => (is => 'ro', isa => 'CodeRef', default => sub {
-    my ($self, $message) = @_;
-    $self->log->error("Error processing message " . $message->ReceiptHandle);
-    $self->log->debug("Message Dump " . Dumper($message));
+    return sub {
+      my ($self, $message) = @_;
+      $self->log->error("Error processing message " . $message->ReceiptHandle);
+      $self->log->debug("Message Dump " . Dumper($message));
+    }
   });
 
   sub run {
