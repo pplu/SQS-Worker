@@ -5,12 +5,12 @@ use warnings;
 use Test::More;
 use Test::Exception;
 
-use Client::Storable;
+use SQS::Worker::Client;
 use Worker::Storable;
 use TestMessage;
 
 
-my $client = Client::Storable->new(queue_url => '', region => '');
+my $client = SQS::Worker::Client->new(serializer => 'storable', queue_url => '', region => '');
 my $serialized = $client->serialize_params(1, 'param2', [1,2,3], { a => 'hash' });
 
 my $worker = Worker::Storable->new(queue_url => '', region => '');

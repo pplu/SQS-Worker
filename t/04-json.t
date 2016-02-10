@@ -5,12 +5,12 @@ use warnings;
 use Test::More;
 use Test::Exception;
 
-use Client::Json;
+use SQS::Worker::Client;
 use Worker::Json;
 use TestMessage;
 
 
-my $client = Client::Json->new(queue_url => '', region => '');
+my $client = SQS::Worker::Client->new(serializer => 'json', queue_url => '', region => '');
 my $serialized = $client->serialize_params(1, 'param2', [1,2,3], { a => 'hash' });
 
 my $worker = Worker::Json->new(queue_url => '', region => '');

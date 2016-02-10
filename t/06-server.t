@@ -4,7 +4,7 @@ use warnings;
 
 use Test::More;
 
-use Client::Json;
+use SQS::Worker::Client;
 use Worker::Json;
 
 if ( not defined $ENV{SQS_TEST_QUEUE} ) {
@@ -15,7 +15,7 @@ if ( not defined $ENV{SQS_TEST_QUEUE} ) {
 my $queue  = $ENV{SQS_TEST_QUEUE};
 my $region = $ENV{SQS_TEST_REGION};
 
-my $client = Client::Json->new(queue_url => $queue, region => $region);
+my $client = SQS::Worker::Client->new(serializer => 'json', queue_url => $queue, region => $region);
 $client->call(1, 'param2', [1,2,3], { a => 'hash' });
 
 my $worker = Worker::Json->new(queue_url => $queue, region => $region);
