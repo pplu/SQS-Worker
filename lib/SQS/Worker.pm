@@ -46,8 +46,8 @@ package SQS::Worker;
 
     $self->log->debug(sprintf "Got %d messages", scalar(@{ $message_pack->Messages }));
     
-    foreach my $message ($message_pack->Messages) {
-      $self->log->info("Processing message " . $self->ReceiptHandle);
+    foreach my $message (@{$message_pack->Messages}) {
+      $self->log->info("Processing message " . $message->ReceiptHandle);
       eval {
         $self->process_message($message);
       };
@@ -57,7 +57,7 @@ package SQS::Worker;
       } else {
         # If all went well we have to delete the message from the queue
         $self->sqs->DeleteMessage(
-          QueueUrl      => $self->queue_name,
+          QueueUrl      => $self->queue_url,
           ReceiptHandle => $message->ReceiptHandle,
         );
       }
