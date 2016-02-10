@@ -10,23 +10,22 @@ use Worker::Storable;
 use TestMessage;
 
 
-my $qstclient = Client::Storable->new();
+my $client = Client::Storable->new(queue_url => '', region => '');
+my $serialized = $client->serialize_params(1, 'param2', [1,2,3], { a => 'hash' });
 
-my $serialized = $qstclient->store_params(1, 'param2', [1,2,3], { a => 'hash' });
+my $worker = Worker::Storable->new(queue_url => '', region => '');
 
-my $wst = Worker::Storable->new(queue_url => '', region => '');
-
-my $message_st = TestMessage->new(
+my $message = TestMessage->new(
   Body => $serialized,
   ReceiptHandle => ''
 );
-lives_ok { $wst->process_message($message_st) } 'expecting to live';
+lives_ok { $worker->process_message($message) } 'expecting to live';
 
-my $message_to_fail_st = TestMessage->new(
+my $message_to_fail = TestMessage->new(
   Body => '',
   ReceiptHandle => ''
 );
-dies_ok { $wst->process_message($message_to_fail_st) } 'expecting to die';
+dies_ok { $worker->process_message($message_to_fail) } 'expecting to die';
 
 
 done_testing();

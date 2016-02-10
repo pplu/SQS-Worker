@@ -10,23 +10,22 @@ use Worker::Json;
 use TestMessage;
 
 
-my $qcclient = Client::Json->new();
+my $client = Client::Json->new(queue_url => '', region => '');
+my $serialized = $client->serialize_params(1, 'param2', [1,2,3], { a => 'hash' });
 
-my $json = $qcclient->serialize_params(1, 'param2', [1,2,3], { a => 'hash' });
-
-my $w = Worker::Json->new(queue_url => '', region => '');
+my $worker = Worker::Json->new(queue_url => '', region => '');
 
 my $message = TestMessage->new(
-  Body => $json,
+  Body => $serialized,
   ReceiptHandle => ''
 );
-lives_ok { $w->process_message($message) } 'expecting to live';
+lives_ok { $worker->process_message($message) } 'expecting to live';
 
 my $message_to_fail = TestMessage->new(
   Body => '',
   ReceiptHandle => ''
 );
-dies_ok { $w->process_message($message_to_fail) } 'expecting to die';
+dies_ok { $worker->process_message($message_to_fail) } 'expecting to die';
 
 
 done_testing();
