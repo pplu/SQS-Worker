@@ -3,11 +3,9 @@ use strict;
 use warnings;
 
 use Test::More;
-use Test::Exception;
 
 use Client::Json;
 use Worker::Json;
-use TestMessage;
 
 if ( not defined $ENV{SQS_TEST_QUEUE} ) {
   plan skip_all => 'Can\'t test without SQS_TEST_QUEUE environment variable';
