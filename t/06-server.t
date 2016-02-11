@@ -6,6 +6,7 @@ use lib 't/lib';
 
 use Test::More;
 
+use SQS::Worker::DefaultLogger;
 use SQS::Worker::Client;
 use Worker::Json;
 
@@ -20,7 +21,7 @@ my $region = $ENV{SQS_TEST_REGION};
 my $client = SQS::Worker::Client->new(serializer => 'json', queue_url => $queue, region => $region);
 $client->call(1, 'param2', [1,2,3], { a => 'hash' });
 
-my $worker = Worker::Json->new(queue_url => $queue, region => $region);
+my $worker = Worker::Json->new(queue_url => $queue, region => $region, log => SQS::Worker::DefaultLogger->new);
 $worker->fetch_message();
 
 

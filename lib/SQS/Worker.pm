@@ -1,11 +1,4 @@
 # ABSTRACT: manages workers reading from an SQS queue
-package SQS::Worker::DefaultLogger;
-  use Moose;
-  sub _print { print sprintf "[%s] %s %s\n", @_ };
-  sub debug { shift->_print('DEBUG', @_) }
-  sub error { shift->_print('ERROR', @_) }
-  sub info  { shift->_print('INFO', @_) }
-1;
 package SQS::Worker;
   use Paws;
   use Moose::Role;
@@ -23,7 +16,7 @@ package SQS::Worker;
     Paws->service('SQS', region => $self->region);
   });
 
-  has log => (is => 'ro', default => sub { SQS::Worker::DefaultLogger->new });
+  has log => (is => 'ro', required => 1);
 
   has on_failure => (is => 'ro', isa => 'CodeRef', default => sub {
     return sub {
@@ -53,6 +46,7 @@ package SQS::Worker;
       };
 
       if ($@) {
+        $self->log->error("Exception caught: " . $@);
         $self->on_failure->($self, $message);
       } else {
         # If all went well we have to delete the message from the queue

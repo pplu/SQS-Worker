@@ -7,6 +7,7 @@ use lib 't/lib';
 use Test::More;
 use Test::Exception;
 
+use SQS::Worker::DefaultLogger;
 use SQS::Worker::Client;
 use Worker::Storable;
 use TestMessage;
@@ -15,7 +16,7 @@ use TestMessage;
 my $client = SQS::Worker::Client->new(serializer => 'storable', queue_url => '', region => '');
 my $serialized = $client->serialize_params(1, 'param2', [1,2,3], { a => 'hash' });
 
-my $worker = Worker::Storable->new(queue_url => '', region => '');
+my $worker = Worker::Storable->new(queue_url => '', region => '', log => SQS::Worker::DefaultLogger->new);
 
 my $message = TestMessage->new(
   Body => $serialized,
