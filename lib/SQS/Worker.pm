@@ -4,7 +4,7 @@ package SQS::Worker;
   use Moose::Role;
   use Data::Dumper;
 
-  our $VERSION = '0.01';
+  our $VERSION = '0.02';
 
   requires 'process_message';
 
