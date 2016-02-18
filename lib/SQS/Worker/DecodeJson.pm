@@ -14,7 +14,11 @@ package SQS::Worker::DecodeJson;
       $self->log->error("Error decoding JSON body in message " . $message->ReceiptHandle . ": " . $@ . " for content " . $message->Body);
       die $@;
     } else {
-      return $self->$orig(@$body);
+      if (ref($body) eq 'ARRAY'){
+        return $self->$orig(@$body);
+      } else {
+        return $self->$orig($body);
+      }
     }
   };
 
