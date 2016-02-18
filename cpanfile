@@ -2,6 +2,7 @@ requires 'Paws';
 requires 'Moose';
 requires 'JSON::MaybeXS';
 requires 'Log::Log4perl';
+requires 'SNS::Notification';
 
 on 'test' => sub {
   requires 'Test::More';
