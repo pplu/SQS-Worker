@@ -3,6 +3,11 @@ requires 'Moose';
 requires 'JSON::MaybeXS';
 requires 'Log::Log4perl';
 
+on 'test' => sub {
+  requires 'Test::More';
+  requires 'Test::Exception';
+};
+
 on 'develop' => sub {
   requires 'Dist::Zilla';
   requires 'Dist::Zilla::Plugin::Prereqs::FromCPANfile';
