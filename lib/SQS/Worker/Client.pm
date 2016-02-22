@@ -2,7 +2,7 @@ package SQS::Worker::Client {
   use Moose;
   use Paws;
   use JSON::MaybeXS;
-  use Storable qw/freeze/;
+  use Storable qw/nfreeze/;
 
   has queue_url => (is => 'ro', isa => 'Str', required => 1);
   has region    => (is => 'ro', isa => 'Str', required => 1);
@@ -11,7 +11,7 @@ package SQS::Worker::Client {
   has _serializer => (is => 'ro', isa => 'HashRef[CodeRef]', default => sub {
     return {
       json     => sub { return encode_json \@_; },
-      storable => sub { return freeze \@_; }
+      storable => sub { return nfreeze \@_; }
     }
   });
 
