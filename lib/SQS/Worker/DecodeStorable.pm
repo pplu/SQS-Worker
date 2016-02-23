@@ -1,5 +1,6 @@
 package SQS::Worker::DecodeStorable {
   use Moose::Role;
+  use MIME::Base64;
   use Storable qw/thaw/;
 
 
@@ -8,7 +9,7 @@ package SQS::Worker::DecodeStorable {
 
     my $body;
     eval {
-      $body = thaw($message->Body)
+      $body = thaw( decode_base64($message->Body) );
     };
     if ($@) {
       $self->log->error("Error retrieving store file in message " . $message->ReceiptHandle . ": " . $@ . " for content " . $message->Body);
