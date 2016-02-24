@@ -30,4 +30,6 @@ my $worker_instance = $args->worker->new(
 
 if ($worker_instance->does('SQS::Worker')) {
   $worker_instance->run();
+} else {
+  die "You are trying to load a non-SQS::Worker compliant class: " . $args->worker;
 }
