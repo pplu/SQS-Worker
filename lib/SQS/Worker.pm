@@ -29,12 +29,12 @@ has on_failure => (is => 'ro', isa => 'CodeRef', default => sub {
 
 has processor => (is => 'ro', lazy => 1, default => sub {
     my $self = shift;
-    return SQS::Consumers::Default->new(worker => $self);
+    return SQS::Consumers::Default->new;
 });
 
 sub fetch_message {
     my $self = shift;
-    $self->processor->fetch_message();
+    $self->processor->fetch_message($self);
 }
 
 sub run {
@@ -45,7 +45,6 @@ sub run {
 }
 
 sub delete_message {
-    print STDERR "\n*******Called delete\n";
     my ($self, $message) = @_;
     $self->sqs->DeleteMessage(
         QueueUrl      => $self->queue_url,

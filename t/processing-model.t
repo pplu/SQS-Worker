@@ -5,6 +5,8 @@ use lib 't/lib';
 use SQS::Worker::Client;
 use SQS::Worker::DefaultLogger;
 use Worker::NothingWorker;
+use SQS::Consumers::Default;
+use SQS::Consumers::DeleteAlways;
 use TestMessage;
 
 sub stub_sqs {
@@ -28,69 +30,65 @@ sub logmock {
 }
 
 sub mk_success_worker {
+    my $processor = shift;
     my $worker = Worker::NothingWorker->new(
         queue_url => '',
         region => '',
         log => logmock(),
-        sqs => stub_sqs()
+        sqs => stub_sqs(),
+        processor => $processor,
     );
-    $worker->stubs(process_message => sub {
-        print STDERR "processing message\n";
-        return 42;
-    });
+    $worker->stubs(process_message => sub { 42; });
     return $worker;
 };
 
 sub mk_failure_worker {
-    my $logmock = mock();
+    my $processor = shift;
     my $worker = Worker::NothingWorker->new(
         queue_url => '',
         region => '',
         log => logmock(),
-        sqs => stub_sqs()
-        );
+        sqs => stub_sqs(),
+        processor => $processor,
+    );
     $worker->stubs(process_message => sub { die "I'm falling" });
     return $worker;
 }
 
-# describe "I can stub" => sub {
-#     it "message processing" => sub {
-#         my $worker = mk_success_worker();
-#         $worker->fetch_message();
-#     };
-# };
-
-describe "DefaultProcessingModel" => sub {
+describe "Default consumer" => sub {
+    my $processor = SQS::Consumers::Default->new;
     it "will delete message on success" => sub {
-        my $worker = mk_success_worker();
+        my $worker = mk_success_worker($processor);
         my $expectation = $worker->expects('delete_message')->once();
         $worker->fetch_message();
         ok($expectation->verify);
     };
 
     it "will not delete message on failure" => sub {
-        my $worker = mk_failure_worker();
+        my $worker = mk_failure_worker($processor);
         my $expectation = $worker->expects('delete_message')->never();
         $worker->fetch_message();
         ok($expectation->verify);
     };
 };
 
-# xdescribe "DeleteAlwaysProcessingModel" => sub {
-#     my $client = SQS::Worker::Client->new(serializer => 'json', queue_url => '', region => '');
-#     my $serialized = $client->serialize_params(1, 'param2', [1,2,3], { a => 'hash' });
-#     my $message = TestMessage->new(Body => $serialized, ReceiptHandle => '');
+describe "DeleteAlways consumer" => sub {
+    my $processor = SQS::Consumers::DeleteAlways->new;
 
-#     it "will delete message on success" => sub {
-#         my $worker = mk_success_worker();
-#         $worker->process_message($message);
-#     };
+    it "will delete message on success" => sub {
+        my $worker = mk_success_worker($processor);
+        my $expectation = $worker->expects('delete_message')->once();
+        $worker->fetch_message();
+        ok($expectation->verify);
+    };
 
-#     it "will delete message on failure" => sub {
-#         my $worker = mk_failure_worker();
-#         $worker->process_message($message);
-#     };
-# };
+    it "will delete message on failure" => sub {
+        my $worker = mk_failure_worker($processor);
+        my $expectation = $worker->expects('delete_message')->once();
+        $worker->fetch_message();
+        ok($expectation->verify);
+    };
+};
 
 runtests unless caller;
 1;

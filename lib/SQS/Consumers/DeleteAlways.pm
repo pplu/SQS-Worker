@@ -1,4 +1,4 @@
-package SQS::Consumers::Default;
+package SQS::Consumers::DeleteAlways;
 use Moose;
 use namespace::autoclean;
 
@@ -22,8 +22,8 @@ sub fetch_message {
             $worker->on_failure->($worker, $message);
         } else {
             # If all went well we have to delete the message from the queue
-            $worker->delete_message($message);
         }
+        $worker->delete_message($message);
     }
 }
 
