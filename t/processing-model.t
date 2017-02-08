@@ -16,7 +16,8 @@ sub stub_sqs {
     my $message_pack = stub(Messages => [$message]);
     my $sqs_stub = stub(
         ReceiveMessage => $message_pack,
-        DeleteMessage => undef
+        DeleteMessage => undef,
+        isa => 'Paws::SQS',
     );
     return $sqs_stub;
 }

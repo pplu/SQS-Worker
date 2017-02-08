@@ -12,7 +12,7 @@ requires 'process_message';
 has queue_url => (is => 'ro', isa => 'Str', required => 1);
 has region => (is => 'ro', isa => 'Str', required => 1);
 
-has sqs => (is => 'ro', lazy => 1, default => sub {
+has sqs => (is => 'ro', isa => 'Paws::SQS', lazy => 1, default => sub {
     my $self = shift;
     Paws->service('SQS', region => $self->region);
 });
