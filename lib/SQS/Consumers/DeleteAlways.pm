@@ -20,9 +20,8 @@ sub fetch_message {
         if ($@) {
             $worker->log->error("Exception caught: " . $@);
             $worker->on_failure->($worker, $message);
-        } else {
-            # If all went well we have to delete the message from the queue
         }
+        # We have to delete the message from the queue in any case
         $worker->delete_message($message);
     }
 }
