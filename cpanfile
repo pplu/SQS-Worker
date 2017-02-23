@@ -3,6 +3,7 @@ requires 'Moose';
 requires 'JSON::MaybeXS';
 requires 'Log::Log4perl';
 requires 'SNS::Notification';
+requires 'Module::Runtime';
 
 on 'test' => sub {
   requires 'Test::More';

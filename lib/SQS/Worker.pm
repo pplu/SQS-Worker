@@ -4,6 +4,7 @@ use Paws;
 use Moose::Role;
 use Data::Dumper;
 use SQS::Consumers::Default;
+use SQS::Consumers::DeleteAlways;
 
 our $VERSION = '0.03';
 
