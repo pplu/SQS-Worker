@@ -7,6 +7,7 @@ requires 'SNS::Notification';
 on 'test' => sub {
   requires 'Test::More';
   requires 'Test::Exception';
+  requires 'Test::Spec';
 };
 
 on 'develop' => sub {
