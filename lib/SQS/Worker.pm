@@ -6,7 +6,7 @@ use Data::Dumper;
 use SQS::Consumers::Default;
 use SQS::Consumers::DeleteAlways;
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 requires 'process_message';
 

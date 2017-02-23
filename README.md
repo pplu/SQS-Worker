@@ -24,10 +24,16 @@ sub process_message {
 }
 ```
 
-Once you have this class, there's a script in local/bin (installed as part of the SQS::Worker framework, with carton) called *spawn_worker* that, along with some extra configuration, launch a process that will receive messages from the queue and pass them to the worker class you've created.
+Once you have this class, there's a script (installed as part of the SQS::Worker framework) called *spawn_worker* that, along with some extra configuration, launch a process that will receive messages from the queue and pass them to the worker class you've created.
 
 ```
 spawn_worker --worker YourClass --queue_url sqs_endpoint_url --region aws_sqs_region --log_conf log4perl_config_file_path
+```
+
+You can control if the message should be deleted upon reception (before the message is actually processed) with:
+
+```
+spawn_worker --worker YourClass --queue_url sqs_endpoint_url --region aws_sqs_region --log_conf log4perl_config_file_path --consumer DeleteAlways
 ```
 
 ## Composable interceptors for workers
@@ -41,6 +47,13 @@ While the basic worker role will provide your code with a raw sqs message, there
 
 For example, if you compose your worker with the role SQS::Worker::DecodeJSON, the message received by the worker will be a perl datastructure.
 Look the documentation of each interceptor too see what each does, and how to be used.
+
+You can compose more than one Worker role into your worker. If you recieve a message in JSON format, and later want to dispatch it to a series
+of actions, you can:
+
+```
+with 'SQS::Worker', 'SQS::Worker::DecodeJson', 'SQS::Worker::Multiplex';
+```
 
 ## Credentials handling
 
