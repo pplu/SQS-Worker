@@ -6,6 +6,9 @@ sub fetch_message {
     my $self = shift;
     my $worker = shift;
 
+    # Automatically reap child processes so we don't get zombies
+    $SIG{ CHLD } = 'IGNORE';
+
     $worker->log->debug('Receiving Messages');
     my $message_pack = $worker->receive_message();
 
@@ -22,6 +25,10 @@ sub fetch_message {
         if ($chld == -1) {
             $worker->log->error("problem forking: ", $!);
         } elsif ($chld == 0) {
+          # Restore SIG_CHLD in the child process to the default Perl behaviour (so 
+          # system, f.ex, will be able to correctly collect exit codes)
+          $SIG{ CHLD } = 'DEFAULT';
+
           eval {
             $worker->process_message($message);
           };
