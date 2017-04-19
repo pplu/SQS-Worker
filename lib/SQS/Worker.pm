@@ -72,7 +72,7 @@ SQS::Worker
 =head1 DESCRIPTION
 
 This role is to be composed into the end user code that want to receive 
-messages from an SQS queue. 
+and automatically process messages from an SQS queue. 
 
 The worker is running uninterrumped, fetching messages from it's configured 
 queue, one at a time and then executing the process_message of the consuming class.
@@ -83,7 +83,7 @@ The worker consumer can compose further funcionality by consuming more roles fro
 
 Simple usage
 
-	package MyConsumer;
+	package YourWorker;
 
 	use Moose;
 	with 'SQS::Worker';
@@ -97,7 +97,7 @@ Simple usage
 
 Composing automatic json decoding to perl data structure
 
-	package MyConsumer;
+	package YourWorker;
   use Moose;
 	with 'SQS::Worker', 'SQS::Worker::DecodeJson';
 
@@ -137,10 +137,10 @@ Create a Moose role that wraps functionality around the method C<process_message
 
 And then use it inside your consumers
 
-  package MyConsumer;
+  package YourWorker;
   
 	use Moose;
-	with 'SQS::Worker', 'SQS::Worker::DecodeJson';
+	with 'SQS::Worker', 'PrefixTheMessage';
   
 	sub process_mesage {
 		my ($self, $message) = @_;
@@ -149,10 +149,18 @@ And then use it inside your consumers
   
   1;
 
+=head1 Composing roles
+
+The worker roles can be composed (if it makes sense), so your worker could implement
+
+  with 'SQS::Worker', 'SQS::Worker::DecodeJson', 'SQS::Worker::Multiplex';
+
+to decode a message in json format that will then dispatch the json to the multiplex worker
+
 =head1 Error handling
 
 Any exception thrown from process_message will be treated as a failed message. Different
-message processors treat failed messages in different ways
+message processors treat failed messages in different ways:
 
 =head1 Message processors
 
@@ -163,6 +171,44 @@ appropiately
 
 L<SQS::Consumers::DeleteAlways> Message deleted, then processed. If a message fails it will
 not be reprocessed ever
+
+=head1 Running the worker
+
+Running the worker can be done via the C<spawn_worker> command that comes bundled with the 
+distribution
+
+  spawn_worker --worker YourWorker --queue_url sqs_endpoint_url --region aws_sqs_region --log_conf log4perl_config_file_path
+
+or you can create an instance of your object and invoke run:
+
+  my $worker_instance = YourWorker->new(
+    queue_url => $args->queue_url,
+    region    => $args->region,
+    log => Log::Log4perl->get_logger('async'),
+    processor => $args->_consumer,
+  );
+  $worker_instance->run
+
+=head1 Credentials
+
+SQS::Worker uses the same credential system as L<Paws> to authenticate to SQS: so, in a nutshell, it
+will work if you:
+
+=over
+
+=item *
+
+have the credentials in the home of the user launching the script, in the ~/.aws/credentials file.
+
+=item *
+
+assign an IAM role to the EC2 instance that is running the code (if deploying the code inside an EC2 instance)
+
+=item *
+
+set environment variables: AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
+
+=back
 
 =head1 SEE ALSO
  

@@ -9,6 +9,7 @@ on 'test' => sub {
   requires 'Test::More';
   requires 'Test::Exception';
   requires 'Test::Spec';
+  requires 'Test::Pod';
 };
 
 on 'develop' => sub {
