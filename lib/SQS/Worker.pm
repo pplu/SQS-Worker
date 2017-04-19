@@ -1,4 +1,3 @@
-# ABSTRACT: manages workers reading from an SQS queue
 package SQS::Worker;
 use Paws;
 use Moose::Role;
@@ -67,17 +66,26 @@ sub receive_message {
 
 =head1 NAME
 
-SQS::Worker
+SQS::Worker - A light framework for processing messages from SQS queues
 
 =head1 DESCRIPTION
 
-This role is to be composed into the end user code that want to receive 
-and automatically process messages from an SQS queue. 
+SQS::Worker is a light framework that allows you to just code asyncronous tasks
+that consume messages from an SQS Queue. The framework takes care of launching the 
+necessary processes (workers), and executes your code on incoming messages, so you
+can focus on writing the important part (behavior)
 
-The worker is running uninterrumped, fetching messages from it's configured 
-queue, one at a time and then executing the process_message of the consuming class.
+Also, since you're surely going to be deserializing the messages that come from the
+queue, SQS::Worker provides you with ways to easily consume JSON messages, for example.
 
-The worker consumer can compose further funcionality by consuming more roles from the SQS::Worker namespace.
+It comes in the form of a Moose role that is to be composed into the end user code 
+that wants to receive and process messages from an SQS queue. 
+
+The worker runs uninterrumped, fetching messages from it's configured queue, 
+one at a time and then executing the process_message of the worker class.
+
+The worker consumer can compose further funcionality by consuming more roles 
+from the SQS::Worker namespace.
 
 =head1 USAGE
 
@@ -178,6 +186,10 @@ Running the worker can be done via the C<spawn_worker> command that comes bundle
 distribution
 
   spawn_worker --worker YourWorker --queue_url sqs_endpoint_url --region aws_sqs_region --log_conf log4perl_config_file_path
+
+You can also control if the message should be deleted upon reception (before the message is actually processed) with
+
+ spawn_worker --worker YourClass --queue_url sqs_endpoint_url --region aws_sqs_region --log_conf log4perl_config_file_path --consumer DeleteAlways
 
 or you can create an instance of your object and invoke run:
 
