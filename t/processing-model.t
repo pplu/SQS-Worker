@@ -7,6 +7,7 @@ use SQS::Worker::DefaultLogger;
 use Worker::NothingWorker;
 use SQS::Consumers::Default;
 use SQS::Consumers::DeleteAlways;
+use SQS::Consumers::DeleteAndFork;
 use TestMessage;
 
 sub stub_sqs {
@@ -75,6 +76,23 @@ describe "Default consumer" => sub {
 
 describe "DeleteAlways consumer" => sub {
     my $processor = SQS::Consumers::DeleteAlways->new;
+
+    it "will delete message on success" => sub {
+        my $worker = mk_success_worker($processor);
+        my $expectation = $worker->expects('delete_message')->once();
+        $worker->fetch_message();
+        ok($expectation->verify);
+    };
+
+    it "will delete message on failure" => sub {
+        my $worker = mk_failure_worker($processor);
+        my $expectation = $worker->expects('delete_message')->once();
+        $worker->fetch_message();
+        ok($expectation->verify);
+    };
+};
+describe "DeleteAndFork consumer" => sub {
+    my $processor = SQS::Consumers::DeleteAndFork->new;
 
     it "will delete message on success" => sub {
         my $worker = mk_success_worker($processor);

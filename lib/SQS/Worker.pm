@@ -4,8 +4,9 @@ use Moose::Role;
 use Data::Dumper;
 use SQS::Consumers::Default;
 use SQS::Consumers::DeleteAlways;
+use SQS::Consumers::DeleteAndFork;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 requires 'process_message';
 
