@@ -1,10 +1,13 @@
-package SQS::Consumers::DeleteAlways;
+package SQS::Consumers::DeleteAndFork;
 use Moose;
 use namespace::autoclean;
 
 sub fetch_message {
     my $self = shift;
     my $worker = shift;
+
+    # Automatically reap child processes so we don't get zombies
+    $SIG{ CHLD } = 'IGNORE';
 
     $worker->log->debug('Receiving Messages');
     my $message_pack = $worker->receive_message();
@@ -18,12 +21,25 @@ sub fetch_message {
         # the messages visibility timeout, then the message will possibly be redelivered
         $worker->delete_message($message);
 
-        eval {
+        my $chld = fork;
+        if ($chld == -1) {
+            $worker->log->error("problem forking: ", $!);
+        } elsif ($chld == 0) {
+          # Restore SIG_CHLD in the child process to the default Perl behaviour (so 
+          # system, f.ex, will be able to correctly collect exit codes)
+          $SIG{ CHLD } = 'DEFAULT';
+
+          eval {
             $worker->process_message($message);
-        };
-        if ($@) {
+          };
+          if ($@) {
             $worker->log->error("Exception caught: " . $@);
             $worker->on_failure->($worker, $message);
+          }
+          # Exit the child (nothing more to do in childs)
+          exit;
+        } else {
+          # Nothing special to do in the parent. Just keep on processing messages
         }
     }
 }

@@ -15,7 +15,7 @@ package SpawnWorkerArgs {
   has log_conf  => (is => 'ro', isa => 'Str', required => 1, documentation => 'Path to a Log4perl config file');
   has consumer  => (is => 'ro', isa => 'Str', required => 0, default => sub { 'Default' },
       documentation => 'The SQS::Consumers model to use. Either Default or DeleteAlways. If empty Default processing model is assumed.');
-  has _consumer  => (is => 'ro', isa => 'Str', lazy => 1, builder => '_consumer_builder');
+  has _consumer  => (is => 'ro', lazy => 1, builder => '_consumer_builder');
 
   sub _consumer_builder {
       my $self = shift;
