@@ -88,9 +88,3 @@ SQS::Worker is an abstraction over Paws, it thus uses the same credential system
 - by assigning an IAM role to the EC2 instance that is running the code (if deploying the code inside an EC2 instance)
 - by using environment variables: AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
 
-# Installing the framework
-
-Your project needs to declare SQS::Worker as a dependency in the cpanfile. This package is only available through CPS-CPAN, so be sure to include the mirror when calling carton install. As in:
-```PERL_CARTON_MIRROR=file://$(HOME)/src/cps-cpan/repo carton install```.
-
-Once installed as a dependency, you can use it as described in the architecture section.
