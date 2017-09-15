@@ -110,7 +110,7 @@ Composing automatic json decoding to perl data structure
   use Moose;
 	with 'SQS::Worker', 'SQS::Worker::DecodeJson';
 
-	sub process_mesage {
+	sub process_message {
 		my ($self, $data) = @_;
 		
 		# Do something with the data, already parsed into a structure
@@ -151,7 +151,7 @@ And then use it inside your consumers
 	use Moose;
 	with 'SQS::Worker', 'PrefixTheMessage';
   
-	sub process_mesage {
+	sub process_message {
 		my ($self, $message) = @_;
     # surprise! $message is prefixed!
   }
