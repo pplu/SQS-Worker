@@ -6,7 +6,7 @@ use SQS::Consumers::Default;
 use SQS::Consumers::DeleteAlways;
 use SQS::Consumers::DeleteAndFork;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 requires 'process_message';
 
