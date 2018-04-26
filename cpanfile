@@ -4,6 +4,7 @@ requires 'JSON::MaybeXS';
 requires 'Log::Log4perl';
 requires 'SNS::Notification';
 requires 'Module::Runtime';
+requires 'namespace::autoclean';
 
 on 'test' => sub {
   requires 'Test::More';
